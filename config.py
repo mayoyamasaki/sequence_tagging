@@ -10,7 +10,6 @@ class Config():
 
         # create instance of logger
         self.logger = get_logger(self.log_path)
-        
 
     # general config
     output_path = "results/crf/"
@@ -18,17 +17,17 @@ class Config():
     log_path = output_path + "log.txt"
 
     # embeddings
-    dim = 300
-    dim_char = 100
-    glove_filename = "data/glove.6B/glove.6B.{}d.txt".format(dim)
-    
+    dim = 50
+    dim_char = 15
+    glove_filename = "data/glove.6B/sampled-glove.6B.{}d.txt".format(dim)
+
     # trimmed embeddings (created from glove_filename with build_data.py)
     trimmed_filename = "data/glove.6B.{}d.trimmed.npz".format(dim)
 
     # dataset
-    dev_filename = "data/coNLL/eng/eng.testa.iob"
-    test_filename = "data/coNLL/eng/eng.testb.iob"
-    train_filename = "data/coNLL/eng/eng.train.iob"
+    dev_filename = "data/devel.iob"
+    test_filename = "data/test.iob"
+    train_filename = "data/train.iob"
     max_iter = None # if not None, max number of examples
 
     # vocab (created from dataset with build_data.py)
@@ -48,7 +47,7 @@ class Config():
     # model hyperparameters
     hidden_size = 300
     char_hidden_size = 100
-    
+
     # NOTE: if both chars and crf, only 1.6x slower on GPU
     crf = True # if crf, training is 1.7x slower on CPU
     chars = True # if char embedding, training is 3.5x slower on CPU

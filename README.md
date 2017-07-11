@@ -73,6 +73,9 @@ Data iterators and utils are in `data_utils.py` and the model with training/test
 
 Training time on NVidia Tesla K80 is 110 seconds per epoch on CoNLL train set using characters embeddings and CRF.
 
+## Test
+We use [glove.6B.zip dataset](https://nlp.stanford.edu/projects/glove/) for test.
+This dataset is made available under the Public Domain Dedication and License v1.0 whose full text can be found at: [http://www.opendatacommons.org/licenses/pddl/1.0/](http://www.opendatacommons.org/licenses/pddl/1.0/).  
 
 ## License 
 
