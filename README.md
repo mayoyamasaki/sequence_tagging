@@ -4,7 +4,7 @@ This repo implements a sequence tagging model using tensorflow.
 
 State-of-the-art performance (F1 score close to 91).
 
-Check my [blog post](https://guillaumegenthial.github.io/sequence-tagging-with-tensorflow.html)
+Check this [blog post](https://guillaumegenthial.github.io/sequence-tagging-with-tensorflow.html)
 
 ## Task
 
