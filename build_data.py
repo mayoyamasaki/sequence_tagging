@@ -1,3 +1,5 @@
+import argparse
+
 from config import Config
 from data_utils import CoNLLDataset, get_vocabs, UNK, NUM, \
     get_glove_vocab, write_vocab, load_vocab, get_char_vocab, \
@@ -44,6 +46,17 @@ def build_data(config):
     write_vocab(vocab_chars, config.chars_filename)
 
 
-if __name__ == "__main__":
-    config = Config('experiments/example/config.ini')
+def main():
+    parser = argparse.ArgumentParser(description='Build data')
+
+    parser.add_argument('config',
+                        type=str,
+                        help='config.ini file')
+
+    args = parser.parse_args()
+
+    config = Config(args.config)
     build_data(config)
+
+if __name__ == "__main__":
+    main()

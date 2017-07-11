@@ -44,7 +44,7 @@ sentence
 ```
 
 
-Once you have produced your txt files, change the parameters in `config.py` like
+Once you have produced your txt files, change the parameters in `config.ini` like
 
 ```
 # dataset
@@ -57,10 +57,10 @@ You also need to download GloVe vectors.
 
 ## Usage
 
-First, build vocab from the data and extract trimmed glove vectors according to the config in `config.py`.
+First, build vocab from the data and extract trimmed glove vectors according to the config in `config.ini`.
 
 ```
-python build_data.py
+python build_data.py [path to config.ini file]
 ```
 
 Second, train and test model with 
