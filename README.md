@@ -63,10 +63,16 @@ First, build vocab from the data and extract trimmed glove vectors according to 
 python build_data.py [path to config.ini file]
 ```
 
-Second, train and test model with 
+Second, train 
 
 ```
-python main.py
+python main.py train [path to config.ini file]
+```
+
+Last, evaluate
+
+```
+python main.py evaluate [path to config.ini file]
 ```
 
 Data iterators and utils are in `data_utils.py` and the model with training/test procedures are in `model.py`

@@ -48,11 +48,7 @@ def build_data(config):
 
 def main():
     parser = argparse.ArgumentParser(description='Build data')
-
-    parser.add_argument('config',
-                        type=str,
-                        help='config.ini file')
-
+    parser.add_argument('config', type=str, help='config.ini file')
     args = parser.parse_args()
 
     config = Config(args.config)
