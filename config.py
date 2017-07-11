@@ -19,6 +19,7 @@ class Config():
         # general config
         self.output_path = str(config['path']["output_path"])
         self.model_output = str(config['path']["model_output"])
+        self.learning_curves_output = str(config['path']["learning_curves_output"])
         self.log_path = str(config['path']["log_path"])
 
         # embeddings

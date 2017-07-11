@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import json
 import tensorflow as tf
 from data_utils import minibatches, pad_sequences, get_chunks
 from general_utils import Progbar, print_sentence
@@ -309,7 +310,7 @@ class NERModel(object):
         return acc, f1
 
 
-    def train(self, train, dev, tags):
+    def train(self, train, dev, tags, test=None):
         """
         Performs training with early stopping and lr exponential decay
 
@@ -317,9 +318,15 @@ class NERModel(object):
             train: dataset that yields tuple of sentences, tags
             dev: dataset
             tags: {tag: index} dictionary
+            test: dataset to validate model
         """
         best_score = 0
         saver = tf.train.Saver()
+        learning_curves = {
+            'training': { 'acc':[], 'f1':[] },
+            'validation': { 'acc':[], 'f1':[] }
+        }
+
         # for early stopping
         nepoch_no_imprv = 0
         with tf.Session() as sess:
@@ -330,6 +337,13 @@ class NERModel(object):
                 self.logger.info("Epoch {:} out of {:}".format(epoch + 1, self.config.nepochs))
 
                 acc, f1 = self.run_epoch(sess, train, dev, tags, epoch)
+
+                if test is not None:
+                    test_acc, test_f1 = self.run_evaluate(sess, test, tags)
+                    learning_curves['training']['acc'].append(acc)
+                    learning_curves['training']['f1'].append(f1)
+                    learning_curves['validation']['acc'].append(acc)
+                    learning_curves['validation']['f1'].append(f1)
 
                 # decay learning rate
                 self.config.lr *= self.config.lr_decay
@@ -349,6 +363,9 @@ class NERModel(object):
                         self.logger.info("- early stopping {} epochs without improvement".format(
                                         nepoch_no_imprv))
                         break
+
+        with open(self.config.learning_curves_output, 'w', encoding='utf-8') as fd:
+            fd.write(json.dumps(learning_curves, sort_keys=True, indent=4))
 
 
     def evaluate(self, test, tags):

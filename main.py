@@ -29,11 +29,13 @@ def train(args):
                         processing_tag, config.max_iter)
     train = CoNLLDataset(config.train_filename, processing_word,
                         processing_tag, config.max_iter)
+    test  = CoNLLDataset(config.test_filename, processing_word,
+                        processing_tag, config.max_iter)
     # build model
     model = NERModel(config, embeddings, ntags=len(vocab_tags),
                                          nchars=len(vocab_chars))
     model.build()
-    model.train(train, dev, vocab_tags)
+    model.train(train, dev, vocab_tags, test=test)
 
 
 def evaluate(args):
