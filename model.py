@@ -342,8 +342,8 @@ class NERModel(object):
                     test_acc, test_f1 = self.run_evaluate(sess, test, tags)
                     learning_curves['training']['acc'].append(acc)
                     learning_curves['training']['f1'].append(f1)
-                    learning_curves['validation']['acc'].append(acc)
-                    learning_curves['validation']['f1'].append(f1)
+                    learning_curves['validation']['acc'].append(test_acc)
+                    learning_curves['validation']['f1'].append(test_f1)
 
                 # decay learning rate
                 self.config.lr *= self.config.lr_decay
