@@ -45,5 +45,5 @@ def build_data(config):
 
 
 if __name__ == "__main__":
-    config = Config()
+    config = Config('experiments/example/config.ini')
     build_data(config)

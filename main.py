@@ -1,10 +1,12 @@
+import argparse
+
 from data_utils import get_trimmed_glove_vectors, load_vocab, \
     get_processing_word, CoNLLDataset
 from model import NERModel
 from config import Config
 
 # create instance of config
-config = Config()
+config = Config('experiments/example/config.ini')
 
 # load vocabs
 vocab_words = load_vocab(config.words_filename)
@@ -38,3 +40,10 @@ model.train(train, dev, vocab_tags)
 model.evaluate(test, vocab_tags)
 model.interactive_shell(vocab_tags, processing_word)
 
+
+#def main():
+#    parser = argparse.ArgumentParser()
+#
+#
+#if __name__ == '__main__':
+#    main()
