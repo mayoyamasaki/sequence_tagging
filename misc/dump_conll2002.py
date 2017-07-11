@@ -11,9 +11,9 @@ train_sents, devel_sents = train_sents[:i], train_sents[i:]
 
 fmt = lambda sents: '\n\n'.join(['\n'.join([' '.join(p) for p in s])
                                  for s in sents])
-with open('train.iob', 'w', encoding='utf-8') as fd:
+with open('data/train.iob', 'w', encoding='utf-8') as fd:
     fd.write(fmt(train_sents))
-with open('devel.iob', 'w', encoding='utf-8') as fd:
+with open('data/devel.iob', 'w', encoding='utf-8') as fd:
     fd.write(fmt(devel_sents))
-with open('test.iob', 'w', encoding='utf-8') as fd:
+with open('data/test.iob', 'w', encoding='utf-8') as fd:
     fd.write(fmt(test_sents))
