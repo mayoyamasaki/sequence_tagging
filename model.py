@@ -1,9 +1,9 @@
 import numpy as np
 import os
-import json
 import tensorflow as tf
 from data_utils import minibatches, pad_sequences, get_chunks
-from general_utils import Progbar, print_sentence
+from general_utils import Progbar, print_sentence, LCLogger
+from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 
 
 class NERModel(object):
@@ -272,9 +272,9 @@ class NERModel(object):
             if i % 10 == 0:
                 self.file_writer.add_summary(summary, epoch*nbatches + i)
 
-        acc, f1 = self.run_evaluate(sess, dev, tags)
+        acc, f1, details = self.run_evaluate(sess, dev, tags)
         self.logger.info("- dev acc {:04.2f} - f1 {:04.2f}".format(100*acc, 100*f1))
-        return acc, f1
+        return acc, f1, details
 
 
     def run_evaluate(self, sess, test, tags):
@@ -285,29 +285,40 @@ class NERModel(object):
             test: dataset that yields tuple of sentences, tags
             tags: {tag: index} dictionary
         Returns:
-            accuracy
-            f1 score
+            micro accuracy
+            f1 score on chunks
+            tuple (precision each clasees,
+                   recall each classes,
+                   fscore each classes,
+                   support each classes)
         """
-        accs = []
         correct_preds, total_correct, total_preds = 0., 0., 0.
+        y_true = []
+        y_pred = []
         for words, labels in minibatches(test, self.config.batch_size):
             labels_pred, sequence_lengths = self.predict_batch(sess, words)
-
             for lab, lab_pred, length in zip(labels, labels_pred, sequence_lengths):
                 lab = lab[:length]
                 lab_pred = lab_pred[:length]
-                accs += [a==b for (a, b) in zip(lab, lab_pred)]
+
                 lab_chunks = set(get_chunks(lab, tags))
                 lab_pred_chunks = set(get_chunks(lab_pred, tags))
                 correct_preds += len(lab_chunks & lab_pred_chunks)
                 total_preds += len(lab_pred_chunks)
                 total_correct += len(lab_chunks)
 
-        p = correct_preds / total_preds if correct_preds > 0 else 0
-        r = correct_preds / total_correct if correct_preds > 0 else 0
-        f1 = 2 * p * r / (p + r) if correct_preds > 0 else 0
-        acc = np.mean(accs)
-        return acc, f1
+                y_true.extend(lab)
+                y_pred.extend(lab_pred)
+
+        _p = correct_preds / total_preds if correct_preds > 0 else 0
+        _r = correct_preds / total_correct if correct_preds > 0 else 0
+        f1 = 2 * _p * _r / (_p + _r) if correct_preds > 0 else 0
+
+        acc = accuracy_score(y_true, y_pred)
+        tag_list = [l for _, l in sorted(zip(tags.values(), tags.keys()))]
+        # precision recall fscore support of each classes(tags, labels)
+        ps, rs, fs, ss = precision_recall_fscore_support(y_true, y_pred, average=None, labels=tag_list)
+        return acc, f1, (ps, rs, fs, ss)
 
 
     def train(self, train, dev, tags, test=None):
@@ -322,10 +333,7 @@ class NERModel(object):
         """
         best_score = 0
         saver = tf.train.Saver()
-        learning_curves = {
-            'training': { 'acc':[], 'f1':[] },
-            'validation': { 'acc':[], 'f1':[] }
-        }
+        lc_logger = LCLogger()
 
         # for early stopping
         nepoch_no_imprv = 0
@@ -336,14 +344,25 @@ class NERModel(object):
             for epoch in range(self.config.nepochs):
                 self.logger.info("Epoch {:} out of {:}".format(epoch + 1, self.config.nepochs))
 
-                acc, f1 = self.run_epoch(sess, train, dev, tags, epoch)
+                acc, f1, (p, r, f, s) = self.run_epoch(sess, train, dev, tags, epoch)
 
                 if test is not None:
-                    test_acc, test_f1 = self.run_evaluate(sess, test, tags)
-                    learning_curves['training']['acc'].append(acc)
-                    learning_curves['training']['f1'].append(f1)
-                    learning_curves['validation']['acc'].append(test_acc)
-                    learning_curves['validation']['f1'].append(test_f1)
+                    _acc, _f1, (_p, _r, _f, _s) = self.run_evaluate(sess, test, tags)
+
+                    lc_logger.scalar('training_accuracy', acc)
+                    lc_logger.scalar('training_fscore', f1)
+                    lc_logger.scalar('validation_accuracy', _acc)
+                    lc_logger.scalar('validation_fscore', _f1)
+
+                    for tag, i in tags.items():
+                        lc_logger.scalar('training_{}_precision'.format(tag), p[i])
+                        lc_logger.scalar('training_{}_recall'.format(tag), r[i])
+                        lc_logger.scalar('training_{}_fscore'.format(tag), f[i])
+                        lc_logger.scalar('training_{}_support'.format(tag), s[i])
+                        lc_logger.scalar('validation_{}_precision'.format(tag), _p[i])
+                        lc_logger.scalar('validation_{}_recall'.format(tag), _r[i])
+                        lc_logger.scalar('validation_{}_fscore'.format(tag), _f[i])
+                        lc_logger.scalar('validation_{}_support'.format(tag), _s[i])
 
                 # decay learning rate
                 self.config.lr *= self.config.lr_decay
@@ -364,16 +383,14 @@ class NERModel(object):
                                         nepoch_no_imprv))
                         break
 
-        with open(self.config.learning_curves_output, 'w', encoding='utf-8') as fd:
-            fd.write(json.dumps(learning_curves, sort_keys=True, indent=4))
-
+        lc_logger.save(self.config.learning_curves_output)
 
     def evaluate(self, test, tags):
         saver = tf.train.Saver()
         with tf.Session() as sess:
             self.logger.info("Testing model over test set")
             saver.restore(sess, self.config.model_output)
-            acc, f1 = self.run_evaluate(sess, test, tags)
+            acc, f1, _ = self.run_evaluate(sess, test, tags)
             self.logger.info("- test acc {:04.2f} - f1 {:04.2f}".format(100*acc, 100*f1))
 
 

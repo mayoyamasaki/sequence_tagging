@@ -1,4 +1,6 @@
+from collections import defaultdict
 import time
+import json
 import sys
 import logging
 import numpy as np
@@ -35,7 +37,7 @@ def get_logger(filename):
 
 class Progbar(object):
     """Progbar class copied from keras (https://github.com/fchollet/keras/)
-    
+
     Displays a progress bar.
     Small edit : added strict arg to update
     # Arguments
@@ -141,4 +143,27 @@ class Progbar(object):
     def add(self, n, values=[]):
         self.update(self.seen_so_far+n, values)
 
+
+class LCLogger(object):
+    """ class is for logging Learning Curves
+    """
+
+    def __init__(self):
+        self.log = defaultdict(list)
+
+    def scalar(self, key, value):
+        self.log[key].append(self.sanitize(value))
+
+    def sanitize(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return obj
+
+    def save(self, filename):
+        with open(filename, 'w', encoding='utf-8') as fd:
+            fd.write(json.dumps(self.log, sort_keys=True, indent=4))
 
