@@ -46,9 +46,12 @@ class Config():
         self.nepochs = int(config["hyperparameters"]["nepochs"])
         self.dropout = float(config["hyperparameters"]["dropout"])
         self.batch_size = int(config["hyperparameters"]["batch_size"])
+        self.lr_method = str(config["hyperparameters"]["lr_method"])
         self.lr = float(config["hyperparameters"]["lr"])
         self.lr_decay = float(config["hyperparameters"]["lr_decay"])
+        self.clip= int(config["hyperparameters"]["clip"])
         self.nepoch_no_imprv =int(config["hyperparameters"]["nepoch_no_imprv"])
+        self.reload = config["hyperparameters"].getboolean("reload")
 
         # model hyperparameters
         self.hidden_size = int(config["hyperparameters"]["hidden_size"])
