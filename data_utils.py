@@ -361,3 +361,38 @@ def get_chunks(seq, tags):
         chunks.append(chunk)
 
     return chunks
+
+
+def get_chunks_on_noniob(seq, tags):
+    """ It's fork of get_chunks to apply non-iob data.
+
+    the non-iob data requires serial same tags are one entity
+
+    Args:
+        seq: [4, 4, 0, 0, ...] sequence of labels
+        tags: dict["O"] = 4
+    Returns:
+        list of (chunk_type, chunk_start, chunk_end)
+
+    Example:
+        seq = [4, 5, 0, 3]
+        tags = {"PER": 4, "PER": 5, "LOC": 3}
+        result = [("PER", 0, 2), ("LOC", 3, 4)]
+    """
+    entities = []
+    id2tag = {i:t for t, i in tags.items()}
+    default = tags[NONE]
+    prev_tid = default
+    chunk = []
+    for i, tid in enumerate(seq):
+        if prev_tid != default and (prev_tid != tid or tid == default):
+            entities.append((id2tag[prev_tid], chunk[0], chunk[-1]))
+            chunk = []
+        if tid != default:
+            chunk.append(i)
+        prev_tid= tid
+
+    if len(chunk) != 0:
+        entities.append((id2tag[prev_tid], chunk[0], chunk[-1]))
+
+    return entities
