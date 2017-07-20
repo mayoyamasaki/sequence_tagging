@@ -30,6 +30,7 @@ class Config():
         self.trimmed_filename = str(config["data"]["trimmed_filename"])
 
         # dataset
+        self.data_type = str(config["data"]["data_type"])
         self.dev_filename = str(config["data"]["dev_filename"])
         self.test_filename = str(config["data"]["test_filename"])
         self.train_filename = str(config["data"]["train_filename"])

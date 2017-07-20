@@ -1,7 +1,7 @@
 import numpy as np
 import os
 import tensorflow as tf
-from data_utils import minibatches, pad_sequences, get_chunks
+from data_utils import minibatches, pad_sequences, get_chunks, get_chunks_on_noniob
 from general_utils import Progbar, print_sentence, LCLogger
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 
@@ -312,8 +312,13 @@ class NERModel(object):
                 lab = lab[:length]
                 lab_pred = lab_pred[:length]
 
-                lab_chunks = set(get_chunks(lab, tags))
-                lab_pred_chunks = set(get_chunks(lab_pred, tags))
+                if self.config.data_type == 'noniob':
+                    lab_chunks = set(get_chunks_on_noniob(lab, tags))
+                    lab_pred_chunks = set(get_chunks_on_noniob(lab_pred, tags))
+                else:
+                    # else means iob data
+                    lab_chunks = set(get_chunks(lab, tags))
+                    lab_pred_chunks = set(get_chunks(lab_pred, tags))
                 correct_preds += len(lab_chunks & lab_pred_chunks)
                 total_preds += len(lab_pred_chunks)
                 total_correct += len(lab_chunks)
