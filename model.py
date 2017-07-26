@@ -200,9 +200,10 @@ class NERModel(object):
                 optimizer = tf.train.AdagradOptimizer(self.lr)
             elif self.config.lr_method == 'sgd':
                 optimizer = tf.train.GradientDescentOptimizer(self.lr)
+            else:
+                raise NotImplementedError("Unknown train op {}".format(self.config.lr_method))
 
             if self.config.clip > 0:
-                #https://stackoverflow.com/questions/43144785/how-to-clip-the-gradient-norm-on-the-grad-and-var-tuple-in-tensorflow-r1-0
                 gradients, variables = zip(*optimizer.compute_gradients(self.loss))
                 gradients, _ = tf.clip_by_global_norm(gradients, self.config.clip)
                 self.train_op = optimizer.apply_gradients(zip(gradients, variables))
