@@ -1,6 +1,7 @@
-import configparser
 import os
 from general_utils import get_logger
+
+import toml
 
 
 class Config():
@@ -12,9 +13,8 @@ class Config():
         Args:
             filename: path to ini file
         """
-        config = configparser.ConfigParser(
-            interpolation=configparser.ExtendedInterpolation())
-        config.read(filename)
+        with open(filename) as conffile:
+            config = toml.loads(conffile.read())
 
         # general config
         self.output_path = str(config['path']["output_path"])
@@ -34,8 +34,8 @@ class Config():
         self.dev_filename = str(config["data"]["dev_filename"])
         self.test_filename = str(config["data"]["test_filename"])
         self.train_filename = str(config["data"]["train_filename"])
-        self.max_iter = None if str(config["data"]["max_iter"]) == "None"\
-                             else int(config["data"]["max_iter"])
+        _max_iter = int(config["data"]["max_iter"])
+        self.max_iter = _max_iter if _max_iter > 0 else None
 
         # vocab (created from dataset with build_data.py)
         self.words_filename = str(config["data"]["words_filename"])
@@ -43,7 +43,7 @@ class Config():
         self.chars_filename = str(config["data"]["chars_filename"])
 
         # training
-        self.train_embeddings = config["hyperparameters"].getboolean("train_embeddings")
+        self.train_embeddings = bool(config["hyperparameters"]["train_embeddings"])
         self.nepochs = int(config["hyperparameters"]["nepochs"])
         self.dropout = float(config["hyperparameters"]["dropout"])
         self.batch_size = int(config["hyperparameters"]["batch_size"])
@@ -52,7 +52,7 @@ class Config():
         self.lr_decay = float(config["hyperparameters"]["lr_decay"])
         self.clip= int(config["hyperparameters"]["clip"])
         self.nepoch_no_imprv =int(config["hyperparameters"]["nepoch_no_imprv"])
-        self.reload = config["hyperparameters"].getboolean("reload")
+        self.reload = bool(config["hyperparameters"]["reload"])
 
         # model hyperparameters
         self.hidden_size = int(config["hyperparameters"]["hidden_size"])
@@ -60,9 +60,9 @@ class Config():
 
         # NOTE: if both chars and crf, only 1.6x slower on GPU
         # if crf, training is 1.7x slower on CPU
-        self.crf = config["hyperparameters"].getboolean("crf")
+        self.crf = bool(config["hyperparameters"]["crf"])
         # if char embedding, training is 3.5x slower on CPU
-        self.chars = config["hyperparameters"].getboolean("chars")
+        self.chars = bool(config["hyperparameters"]["chars"])
 
         # directory for training outputs
         if not os.path.exists(self.output_path):

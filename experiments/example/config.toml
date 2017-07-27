@@ -1,0 +1,50 @@
+[path]
+output_path = "experiments/example/results/"
+model_output = "experiments/example/results/model.weights/"
+learning_curves_output = "experiments/example/results/lc.json"
+log_path = "experiments/example/results/log.txt"
+
+[data]
+# embeddings
+dim = 50
+dim_char = 15
+glove_filename = "data/glove.6B/sampled-glove.6B.50d.txt"
+# trimmed embeddings (created from glove_filename with build_data.py)
+trimmed_filename = "data/glove.6B.50d.trimmed.npz"
+
+# support sequence data type iob and noniob
+data_type = "iob"
+
+dev_filename = "data/kaggle-GMB_devel.iob"
+test_filename = "data/kaggle-GMB_test.iob"
+train_filename = "data/kaggle-GMB_train.iob"
+
+# if not nagive number, max number of examples
+max_iter = -1
+
+# vocab (created from dataset with build_data.py)
+words_filename = "data/kaggle-GMB_words.txt"
+tags_filename = "data/kaggle-GMB_tags.txt"
+chars_filename = "data/kaggle-GMB_chars.txt"
+
+[hyperparameters]
+# training
+train_embeddings = true
+nepochs = 15
+dropout = 0.5
+batch_size = 20
+lr_method = "adam"
+lr = 0.001
+lr_decay = 0.9
+clip = 5
+nepoch_no_imprv = 3
+reload = false
+# model hyperparameters
+hidden_size = 300
+char_hidden_size = 100
+
+# NOTE: if both chars and crf, only 1.6x slower on GPU
+# if crf, training is 1.7x slower on CPU
+crf = true
+# if char embedding, training is 3.5x slower on CPU
+chars = true

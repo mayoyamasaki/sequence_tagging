@@ -335,7 +335,9 @@ class NERModel(object):
 
         acc = accuracy_score(y_true, y_pred)
         # precision recall fscore support of each classes(tags, labels)
-        ps, rs, fs, ss = precision_recall_fscore_support(y_true, y_pred, average=None)
+        ps, rs, fs, ss = precision_recall_fscore_support(\
+            y_true, y_pred, average=None, labels=sorted(tags.values()))
+
         return acc, f1, (ps, rs, fs, ss)
 
 
