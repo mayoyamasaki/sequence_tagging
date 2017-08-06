@@ -414,6 +414,7 @@ class NERModel(object):
             saver.restore(sess, self.config.model_output)
             acc, f1, _ = self.run_evaluate(sess, test, tags)
             self.logger.info("- test acc {:04.2f} - f1 {:04.2f}".format(100*acc, 100*f1))
+        return f1
 
 
     def interactive_shell(self, tags, processing_word):

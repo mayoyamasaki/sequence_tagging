@@ -1,9 +1,13 @@
 import argparse
+import shutil
+import os
+
+import tensorflow as tf
 
 from data_utils import get_trimmed_glove_vectors, load_vocab, \
     get_processing_word, CoNLLDataset
 from model import NERModel
-from config import Config
+from config import Config, random_search
 
 
 def train(args):
@@ -18,7 +22,7 @@ def train(args):
     # get processing functions
     processing_word = get_processing_word(vocab_words, vocab_chars,
                     lowercase=True, chars=config.chars)
-    processing_tag  = get_processing_word(vocab_tags, 
+    processing_tag  = get_processing_word(vocab_tags,
                     lowercase=False)
 
     # get pre trained embeddings
@@ -31,11 +35,27 @@ def train(args):
                         processing_tag, config.max_iter)
     test  = CoNLLDataset(config.test_filename, processing_word,
                         processing_tag, config.max_iter)
-    # build model
-    model = NERModel(config, embeddings, ntags=len(vocab_tags),
-                                         nchars=len(vocab_chars))
-    model.build()
-    model.train(train, dev, vocab_tags, test=test)
+
+    best_score = None
+    best_config_src = None
+    best_config_dst = os.path.join(config.output_path, 'best_config.toml')
+    for config in random_search(config):
+        # build model
+        with tf.Graph().as_default():
+            filepath = os.path.join(config.output_path, 'config.toml')
+            config.save(filepath)
+
+            model = NERModel(config, embeddings, ntags=len(vocab_tags),
+                                                 nchars=len(vocab_chars))
+            model.build()
+            # test dataset is used for larning curves
+            model.train(train, dev, vocab_tags, test=test)
+
+            score = model.evaluate(dev, vocab_tags)
+            if best_score is None or score > best_score:
+                best_score = score
+                best_config_src = filepath
+    shutil.copyfile(best_config_src, best_config_dst)
 
 
 def evaluate(args):
