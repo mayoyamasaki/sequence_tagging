@@ -72,39 +72,11 @@ def main():
     fmt = lambda sents: '\n\n'.join(['\n'.join([' '.join(p) for p in s])
                                      for s in sents])
     with open('data/kaggle-GMB_train.iob', 'w', encoding='utf-8') as fd:
-        fd.write(fmt(train_sents[:30]))
+        fd.write(fmt(train_sents))
     with open('data/kaggle-GMB_devel.iob', 'w', encoding='utf-8') as fd:
-        fd.write(fmt(devel_sents[:30]))
+        fd.write(fmt(devel_sents))
     with open('data/kaggle-GMB_test.iob', 'w', encoding='utf-8') as fd:
-        fd.write(fmt(test_sents[:30]))
+        fd.write(fmt(test_sents))
 
 if __name__ == "__main__":
     main()
-2017-07-27 22:04:19,961:ERROR: Foud iligal row: ['', ':', 'I-tim']
-2017-07-27 22:04:19,981:ERROR: Foud iligal row: ['', ';', 'O']
-2017-07-27 22:04:19,981:ERROR: Foud iligal row: ['', ';', 'O']
-2017-07-27 22:04:19,995:ERROR: Foud iligal row: ['', 'Kanout薔NNP', 'I-per']
-2017-07-27 22:04:20,001:ERROR: Foud iligal row: ['', ',', 'O']
-2017-07-27 22:04:20,001:ERROR: Foud iligal row: ['', '``', 'O']
-2017-07-27 22:04:20,002:ERROR: Foud iligal row: ['', ',', 'O']
-2017-07-27 22:04:20,002:ERROR: Foud iligal row: ['', '``', 'O']
-2017-07-27 22:04:20,081:ERROR: Foud iligal row: ['', 'Kountch薔NNP', 'I-art']
-2017-07-27 22:04:20,087:ERROR: Foud iligal row: ['', 'attach薔NN', 'O']
-2017-07-27 22:04:20,226:ERROR: Foud iligal row: ['', 'communiqu薔NN', 'O']
-2017-07-27 22:04:20,251:ERROR: Foud iligal row: ['', ':', 'O']
-2017-07-27 22:04:20,465:ERROR: Foud iligal row: ['', 'RenNNP', 'I-per']
-2017-07-27 22:04:20,468:ERROR: Foud iligal row: ['Sentence: 28979', '``', 'O']
-2017-07-27 22:04:20,468:ERROR: Foud iligal row: ['', '``', 'O']
-2017-07-27 22:04:20,472:ERROR: Foud iligal row: ['', 'AndrNNP', 'I-per']
-2017-07-27 22:04:20,476:ERROR: Foud iligal row: ['', 'attach薔NNP', 'B-per']
-2017-07-27 22:04:20,552:ERROR: Foud iligal row: ['', ';', 'O']
-2017-07-27 22:04:20,603:ERROR: Foud iligal row: ['', ';', 'O']
-2017-07-27 22:04:20,603:ERROR: Foud iligal row: ['', ';', 'O']
-2017-07-27 22:04:20,617:ERROR: Foud iligal row: ['', '``', 'O']
-2017-07-27 22:04:20,617:ERROR: Foud iligal row: ['', '``', 'O']
-2017-07-27 22:04:20,618:ERROR: Foud iligal row: ['', '``', 'O']
-2017-07-27 22:04:20,618:ERROR: Foud iligal row: ['', '``', 'O']
-2017-07-27 22:04:20,639:ERROR: Foud iligal row: ['', 'prot馮NN', 'O']
-2017-07-27 22:04:20,735:ERROR: Foud iligal row: ['', ';', 'O']
-2017-07-27 22:04:20,862:ERROR: Foud iligal row: ['', ';', 'O']
-2017-07-27 22:04:20,949:ERROR: Foud iligal row: ['', ';', 'I-org']
