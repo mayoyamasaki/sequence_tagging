@@ -6,9 +6,9 @@ log_path = "experiments/example/results/log.txt"
 
 [data]
 # embeddings
-dim = 50
-dim_char = 15
-glove_filename = "data/glove.6B/sampled-glove.6B.50d.txt"
+dim = 300
+dim_char = 100
+glove_filename = "data/glove.6B/glove.6B.300d.txt"
 # trimmed embeddings (created from glove_filename with build_data.py)
 trimmed_filename = "data/glove.6B.50d.trimmed.npz"
 
